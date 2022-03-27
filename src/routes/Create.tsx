@@ -10,17 +10,18 @@ export default function Create() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [roomName, setRoomName] = useState("");
+  const [gameNumber, setGameNumber] = useState("");
 
   const handleInput = (e: any) => {
-    setRoomName(e.target.value);
+    setGameNumber(e.target.value);
   };
 
   const handleSubmitForm = (e: any) => {
     e.preventDefault();
 
     const config = {
-      room: roomName,
+      room: gameNumber,
+      options: "",
       category: "",
       difficulty: "",
       questionCount: "",
@@ -31,7 +32,7 @@ export default function Create() {
         // this.setState({ error: "" });
         // this.props.setRoom(this.state.room);
         // this.props.history.push("/lobby");
-        dispatch(setRoom(roomName));
+        dispatch(setRoom(gameNumber));
         navigate("/lobby");
       } else {
         // this.setState({ error: res.msg });
@@ -43,11 +44,11 @@ export default function Create() {
   return (
     <form className="form" onSubmit={handleSubmitForm}>
       <h1 className="title">Create New Game</h1>
-      <h3 className="title">Choose the room number</h3>
+      <h3 className="title">Choose the game number</h3>
 
       <input
         type="text"
-        placeholder="Room Number"
+        placeholder="Game Number"
         autoFocus
         onChange={handleInput}
         className="text-input"
