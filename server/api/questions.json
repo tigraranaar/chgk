@@ -1,23 +1,66 @@
 {
-  "1": {
-    "1": "Вопрос 1",
-    "2": "Вопрос 2",
-    "3": "Вопрос 3",
-    "4": "Вопрос 4",
-    "5": "Вопрос 5"
-  },
-  "2": {
-    "1": "Вопрос 1",
-    "2": "Вопрос 2",
-    "3": "Вопрос 3",
-    "4": "Вопрос 4",
-    "5": "Вопрос 5"
-  },
-  "3": {
-    "1": "Вопрос 1",
-    "2": "Вопрос 2",
-    "3": "Вопрос 3",
-    "4": "Вопрос 4",
-    "5": "Вопрос 5"
-  }
+	"1": [
+		{
+			"type": "",
+			"question": "Вопрос 1 из 1",
+			"correct_answer": "ответ 1",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 2 из 1",
+			"correct_answer": "ответ 2",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 3 из 1",
+			"correct_answer": "ответ 3",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 4 из 1",
+			"correct_answer": "ответ 4",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 5 из 1",
+			"correct_answer": "ответ 5",
+			"incorrect_answers": [""]
+		}
+	],
+	"2": [
+		{
+			"type": "",
+			"question": "Вопрос 1 из 2",
+			"correct_answer": "ответ 1",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 2 из 2",
+			"correct_answer": "ответ 2",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 3 из 2",
+			"correct_answer": "ответ 3",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 4 из 2",
+			"correct_answer": "ответ 4",
+			"incorrect_answers": [""]
+		},
+		{
+			"type": "",
+			"question": "Вопрос 5 из 2",
+			"correct_answer": "ответ 5",
+			"incorrect_answers": [""]
+		}
+	]
 }

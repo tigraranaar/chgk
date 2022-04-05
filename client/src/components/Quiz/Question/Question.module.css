@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap");
+
+.question__container {
+	display: flex;
+	height: calc(100% - 1.5rem);
+	width: 100%;
+	font-family: "Didact Gothic", sans-serif;
+	flex-wrap: nowrap;
+	color: ivory;
+	position: absolute;
+	background-color: rgb(30, 30, 30);
+}
+.left {
+	flex: 0 0 50%;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.number {
+	margin-bottom: 20px;
+	font-size: 40px;
+}
+
+.question {
+	font-size: 28px;
+}
+
+.right {
+	flex: 0 0 50%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.textarea {
+	flex: 0 0 80%;
+	width: 100%;
+	padding: 20px;
+	font-size: 28px;
+	outline: none;
+	box-sizing: border-box;
+}
+.button {
+	flex: 0 0 10%;
+	width: 100%;
+	box-sizing: border-box;
+	border: 0;
+	border-radius: 3px;
+	font-size: 22px;
+	background: darkcyan;
+	color: white;
+}
+/* 
+::-webkit-scrollbar {
+	width: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 240, 0.733);
+	border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: grey;
+}
+
+.enter {
+	opacity: 0;
+	transform: translate(120vw, 0);
+}
+.enterActive {
+	transform: translate(0, 0);
+	opacity: 1;
+	transition: all 1000ms ease-in 1000ms;
+}
+.exit {
+	opacity: 1;
+	transform: translate(0, 0);
+}
+.exitActive {
+	opacity: 0;
+	transform: translate(120vw, 0);
+	transition: all 1000ms ease-in;
+}
+
+@keyframes flash-green {
+	0% {
+		background-color: transparent;
+	}
+	50% {
+		background-color: limegreen;
+	}
+	100% {
+		background-color: transparent;
+	}
+}
+
+@keyframes flash-red {
+	0% {
+		background-color: transparent;
+	}
+	50% {
+		background-color: firebrick;
+	}
+	100% {
+		background-color: transparent;
+	}
+}
+
+ */

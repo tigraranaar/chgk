@@ -1,0 +1,17 @@
+.lobby {
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.title {
+	color: #ffffff;
+}
+
+.buttons {
+	display: flex;
+	gap: 20px;
+}
