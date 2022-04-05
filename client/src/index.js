@@ -14,7 +14,7 @@ import reducer from "./store/reducers/reducer";
 
 const socketURL =
 	process.env.NODE_ENV === "production"
-		? "https://quizit-pc.herokuapp.com"
+		? "https://tigraranaar-chgk.herokuapp.com"
 		: "http://localhost:4001";
 
 export const socket = io.connect(socketURL, {
