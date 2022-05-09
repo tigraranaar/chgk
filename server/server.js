@@ -4,111 +4,135 @@ const app = express();
 const server = require("http").createServer(app);
 const socketIo = require("socket.io");
 const QuizManager = require("./Entities/quizManager");
-
+const myQuestions = require("./api/questions.json");
 const PORT = process.env.PORT || 4001;
-
+const questionData = Object.keys(myQuestions);
 const io = socketIo(server);
-
 const quizManager = new QuizManager();
 
-io.on("connection", socket => {
-	socket.on("create_room", (room, callback) => {
-		try {
-			if (io.sockets.adapter.rooms[room]) {
-				throw "Error in Creating Room";
-			}
-			socket.join(room, () => {
-				socket.quizRoom = room;
-				callback({ status: "Success", roomID: room });
-			});
-		} catch (error) {
-			callback({ status: "Failed", message: error });
-		}
-	});
+const o = {};
 
-	socket.on("join_room", (roomID, playerName, callback) => {
-		const room = io.sockets.adapter.rooms[roomID];
-		if (room) {
-			if (room.length >= 1) {
-				socket.join(roomID, () => {
-					console.log(playerName);
-					socket.quizRoom = roomID;
-					socket.to(roomID).emit("player_joined");
-					callback({ status: "Success", roomID });
-				});
-			} else {
-				callback({ status: "Failed", message: "Room doesn't has players" });
-			}
-		} else callback({ status: "Failed", message: "Room doesn't exist" });
-	});
+const players = [];
 
-	socket.on("submit_answer", answerConfig => {
-		console.log(answerConfig);
+const p = {};
+const p1 = [];
 
-		// const player = socket.id;
-		// const quiz = quizManager.getQuiz(socket.quizRoom);
+io.on("connection", (socket) => {
+  socket.on("create_room", (room, callback) => {
+    try {
+      if (io.sockets.adapter.rooms[room]) {
+        throw "Error in Creating Room";
+      }
+      socket.join(room, () => {
+        socket.quizRoom = room;
+        callback({ status: "Success", roomID: room });
+      });
+    } catch (error) {
+      callback({ status: "Failed", message: error });
+    }
+  });
 
-		// socket.on("show_answer", ({ player, answer }) => {
-		// 	startQuiz(roomID, duration);
-		// 	history.push(`/quiz`);
-		// });
+  socket.on("join_room", (roomID, playerName, callback) => {
+    console.log(playerName);
+    const room = io.sockets.adapter.rooms[roomID];
+    if (room) {
+      if (room.length >= 1) {
+        socket.join(roomID, () => {
+          socket.quizRoom = roomID;
+          socket.to(roomID).emit("player_joined");
+          callback({ status: "Success", roomID });
 
-		// io.to(quiz.room).emit("show_answers", player, answer);
-	});
+          players.push(playerName);
+        });
+      } else {
+        callback({ status: "Failed", message: "Room doesn't has players" });
+      }
+    } else callback({ status: "Failed", message: "Room doesn't exist" });
+  });
 
-	socket.on("get_next_question", async () => {
-		const quiz = quizManager.getQuiz(socket.quizRoom);
-		if (quiz) {
-			const question = await quiz.getNextQuestion();
+  socket.on("submit_answer", (answerConfig) => {
+    // const answerConfig = { playerID, question, answer, playerName };
 
-			io.to(quiz.room).emit("next_question", question);
-		}
-	});
+    let key = answerConfig.question || "--";
+    let playerID = answerConfig.playerID || "--";
+    let playerName = answerConfig.playerName || "--";
+    let answer = answerConfig.answer || "--";
+    let data = { playerName, answer };
 
-	socket.on("question__show", showquestion => {
-		console.log("сервер получил", showquestion);
+    if (!(key in o)) {
+      o[key] = [];
+      o[key].push(data);
+    } else {
+      o[key].push(data);
+    }
 
-		// socket.emit("question__show1", showquestion);
+    console.log(o);
 
-		io.emit("question__show1", showquestion);
+    io.emit("answers__show", o);
 
-		// io.to(showquestion).emit("question__show1", question__show);
+    let json = JSON.stringify(o);
 
-		console.log("сервер отправил", showquestion);
-	});
+    let fs = require("fs");
 
-	socket.on("start_quiz", quizConfig => {
-		const { roomID, ...quizOptions } = quizConfig;
-		if (io.sockets.adapter.rooms[roomID]) {
-			const room = io.sockets.adapter.rooms[roomID];
-			const nMembers = room.length;
-			if (nMembers < 2) {
-				// Handle Error Here
-				return "error";
-			}
+    fs.writeFile("output.json", json, "utf8", function (err) {
+      if (err) {
+        console.log("An error occured while writing JSON Object to File.");
+        return console.log(err);
+      }
 
-			const players = room.sockets;
-			const host = socket.id;
-			quizManager.addQuiz(players, roomID, quizOptions, host);
-			const quiz = quizManager.getQuiz(roomID);
+      console.log("JSON file has been saved.");
+    });
+  });
 
-			io.to(roomID).emit("start_quiz_ack", { roomID: quiz.room, duration: quiz.duration });
-		}
-	});
+  socket.on("get_next_question", async () => {
+    const quiz = quizManager.getQuiz(socket.quizRoom);
+    if (quiz) {
+      const question = await quiz.getNextQuestion();
 
-	socket.on("disconnecting", () => {
-		const room = socket.quizRoom;
-		const quiz = quizManager.getQuiz(socket.quizRoom);
-		io.to(room).emit("opponent_left");
-		if (quiz) quizManager.cleanup(quiz);
-		socket.quizRoom = null;
-	});
+      io.to(quiz.room).emit("next_question", question);
+    }
+  });
+
+  socket.on("question__show", (showquestion) => {
+    io.emit("question__show1", showquestion);
+  });
+
+  socket.on("start_quiz", (quizConfig) => {
+    const { roomID, ...quizOptions } = quizConfig;
+    if (io.sockets.adapter.rooms[roomID]) {
+      const room = io.sockets.adapter.rooms[roomID];
+      const nMembers = room.length;
+      if (nMembers < 2) {
+        return "error";
+      }
+
+      const players = room.sockets;
+      const host = socket.id;
+      quizManager.addQuiz(players, roomID, quizOptions, host);
+      const quiz = quizManager.getQuiz(roomID);
+
+      io.to(roomID).emit("start_quiz_ack", {
+        roomID: quiz.room,
+        duration: quiz.duration,
+      });
+    }
+  });
+
+  socket.on("disconnecting", () => {
+    const room = socket.quizRoom;
+    const quiz = quizManager.getQuiz(socket.quizRoom);
+    io.to(room).emit("opponent_left");
+    if (quiz) quizManager.cleanup(quiz);
+    socket.quizRoom = null;
+  });
+
+  socket.emit("send_data", questionData);
 });
 
 app.use(express.static(path.join(__dirname, "/../client/build")));
 
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname + "/../client/build/index.html"));
+  res.sendFile(path.join(__dirname + "/../client/build/index.html"));
 });
 
 server.listen(PORT, () => console.log(`Socket IO PORT# ${PORT}`));
