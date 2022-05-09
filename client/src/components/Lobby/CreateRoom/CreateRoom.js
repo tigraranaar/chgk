@@ -7,106 +7,121 @@ import FormModal from "../../UI/FormModal/FormModal";
 import * as actions from "../../../store/actions/actions";
 import styles from "../../UI/FormModal/FormModal.module.css";
 
-const CreateRoom = props => {
-	const [roomID, setRoomID] = useState(null);
-	const [error, setError] = useState(null);
-	const [startGame, setStartGame] = useState(false);
+const CreateRoom = (props) => {
+  const [roomID, setRoomID] = useState(1);
+  const [error, setError] = useState(null);
+  const [startGame, setStartGame] = useState(false);
 
-	const topCard = useRef(null);
+  const [gameCount, setGameCount] = useState([]);
 
-	const { setOpponentJoined, startQuiz, history, showModal, closed, setIsHost } = props;
+  const topCard = useRef(null);
 
-	useEffect(() => {
-		socket.on("player_joined", () => {
-			setIsHost();
-			setOpponentJoined();
-			setStartGame(true);
-		});
+  const { setOpponentJoined, startQuiz, history, showModal, closed, setIsHost } = props;
 
-		socket.on("start_quiz_ack", ({ roomID, duration }) => {
-			startQuiz(roomID, duration);
-			history.push(`/quiz`);
-		});
+  useEffect(() => {
+    socket.on("player_joined", () => {
+      setIsHost();
+      setOpponentJoined();
+      setStartGame(true);
+    });
 
-		return () => {
-			socket.off("start_quiz_ack");
-			socket.off("player_joined");
-		};
-	}, []);
+    socket.on("start_quiz_ack", ({ roomID, duration }) => {
+      startQuiz(roomID, duration);
+      history.push(`/quiz`);
+    });
 
-	useEffect(() => {
-		if (roomID)
-			socket.emit("create_room", roomID, response => {
-				if (response.status === "Success") setError(null);
-				else setError(response.message);
-			});
-	}, [roomID]);
+    socket.on("send_data", (questionData) => {
+      setGameCount([...questionData]);
+    });
 
-	const inputhandle = event => {
-		setRoomID(event.target.value);
-	};
-	const generateRoom = event => {
-		setRoomID(roomID);
-		unstackCard();
-	};
+    return () => {
+      socket.off("start_quiz_ack");
+      socket.off("player_joined");
+    };
+  }, []);
 
-	const startQuizHandler = () => {
-		const quizConfig = { roomID };
-		socket.emit("start_quiz", quizConfig);
-	};
+  useEffect(() => {
+    if (roomID)
+      socket.emit("create_room", roomID, (response) => {
+        if (response.status === "Success") setError(null);
+        else setError(response.message);
+      });
+  }, [roomID]);
 
-	const unstackCard = () => {
-		topCard.current.classList.add(styles.unstacked);
-		topCard.current.classList.remove(styles.top);
-		const nextCard = topCard.current.nextElementSibling;
+  const handleSelectChange = (e) => {
+    // setRoomName(e.target.value);
+    setRoomID(e.target.value);
+  };
 
-		nextCard.classList.add(styles.top);
-		nextCard.classList.remove(styles.stacked);
-		topCard.current = nextCard;
-	};
+  // const inputhandle = (event) => {
+  //   setRoomID(event.target.value);
+  // };
+  const generateRoom = (event) => {
+    setRoomID(roomID);
+    unstackCard();
+  };
 
-	return (
-		<FormModal
-			title="Создание игры"
-			showModal={showModal}
-			closed={closed}
-			error={error}
-			cleanup={() => setError(null)}
-		>
-			<div ref={topCard} className={styles.top}>
-				<div className={styles.message}>Введите номер игры</div>
-				<input placeholder="Номер игры" onChange={inputhandle}></input>
-				<button onClick={generateRoom} className={styles.inputGroup}>
-					Создать игру
-				</button>
-			</div>
-			{!startGame && (
-				<div className={joinClasses(styles.stacked, styles.roomCard)}>
-					<div className={styles.message}>Поделитесь номером игры с игроками</div>
-					<div className={joinClasses(styles.inputGroup, styles.room)}>{roomID}</div>
-				</div>
-			)}
-			{startGame && (
-				<div onClick={startQuizHandler}>
-					<div className={styles.inputGroup}>Начать игру</div>
-				</div>
-			)}
-		</FormModal>
-	);
+  const startQuizHandler = () => {
+    const quizConfig = { roomID };
+    socket.emit("start_quiz", quizConfig);
+  };
+
+  const unstackCard = () => {
+    topCard.current.classList.add(styles.unstacked);
+    topCard.current.classList.remove(styles.top);
+    const nextCard = topCard.current.nextElementSibling;
+
+    nextCard.classList.add(styles.top);
+    nextCard.classList.remove(styles.stacked);
+    topCard.current = nextCard;
+  };
+
+  return (
+    <FormModal title="Создание игры" showModal={showModal} closed={closed} error={error} cleanup={() => setError(null)}>
+      <div ref={topCard} className={styles.top}>
+        <div className={styles.message}>Введите номер игры</div>
+
+        <select onChange={handleSelectChange}>
+          {gameCount.map((el, i) => (
+            <option key={i} value={el}>
+              {el}
+            </option>
+          ))}
+        </select>
+
+        <button onClick={generateRoom} className={styles.inputGroup}>
+          Создать игру
+        </button>
+      </div>
+
+      {!startGame && (
+        <div className={joinClasses(styles.stacked, styles.roomCard)}>
+          <div className={styles.message}>Поделитесь номером игры с игроками</div>
+          <div className={joinClasses(styles.inputGroup, styles.room)}>{roomID}</div>
+        </div>
+      )}
+
+      {startGame && (
+        <div onClick={startQuizHandler}>
+          <div className={styles.inputGroup}>Начать игру</div>
+        </div>
+      )}
+    </FormModal>
+  );
 };
 
-const mapStateToProps = state => {
-	return {
-		opponentJoined: state.opponentJoined,
-		isHost: state.isHost,
-	};
+const mapStateToProps = (state) => {
+  return {
+    opponentJoined: state.opponentJoined,
+    isHost: state.isHost,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-	return {
-		startQuiz: (roomID, duration) => dispatch(actions.startQuiz(roomID, duration)),
-		setOpponentJoined: () => dispatch(actions.setOpponentJoined()),
-		setIsHost: () => dispatch(actions.setIsHost()),
-	};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    startQuiz: (roomID, duration) => dispatch(actions.startQuiz(roomID, duration)),
+    setOpponentJoined: () => dispatch(actions.setOpponentJoined()),
+    setIsHost: () => dispatch(actions.setIsHost()),
+  };
 };
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateRoom));

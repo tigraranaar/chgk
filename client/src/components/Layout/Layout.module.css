@@ -1,18 +1,15 @@
 .background {
-	width: 100vw;
-	height: 100vh;
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-	background: #363638;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: #363638;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .layout {
-	width: 90%;
-	height: 90%;
-	margin: auto;
-	background: #1e1e1e;
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  background: #1e1e1e;
 }

@@ -1,187 +1,164 @@
 import React, { useEffect, useState, useRef } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { connect } from "react-redux";
-import { Redirect } from "react-router-dom";
 import { socket } from "../../index";
 
 import Question from "./Question/Question";
-import Result from "../Result/Result";
+import Tables from "./Tables";
 
 import * as actions from "../../store/actions/actions";
 import styles from "./Quiz.module.css";
-import { faBullseye } from "@fortawesome/free-solid-svg-icons";
 
-const Quiz = props => {
-	const [loading, setLoading] = useState(true);
-	const [question, setQuestion] = useState(null);
-	const [choices, setChoices] = useState(null);
-	const [homeRedirect, setHomeRedirect] = useState(false);
-	const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+const Quiz = (props) => {
+  const [question, setQuestion] = useState(null);
+  // const [answer, setAnswer] = useState([]);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const fetchMoreQuestionsTimeout = useRef(null);
+  const pingIntervalRef = useRef(null);
+  const timerRef = useRef(null);
+  const quesNumberRef = useRef(0);
 
-	const [showQuestion, setShowQuestion] = useState(false);
+  const playerID = socket.id;
+  const { appear, appearActive, enter, enterActive, exit, exitActive } = styles;
+  const { setOpponentLeft, endQuiz, isHost, duration, isPlayer, isModerator, playerName } = props;
 
-	const fetchMoreQuestionsTimeout = useRef(null);
-	const pingIntervalRef = useRef(null);
-	const timerRef = useRef(null);
-	const quesNumberRef = useRef(0);
+  useEffect(() => {
+    if (!isPlayer) {
+      getNextQuestion();
+    }
 
-	const playerID = socket.id;
-	const { appear, appearActive, enter, enterActive, exit, exitActive } = styles;
-	const {
-		quizInProgress,
-		setOpponentLeft,
-		endQuiz,
-		isHost,
-		duration,
-		isPlayer,
-		isQuestionDisplay,
-	} = props;
+    pingIntervalRef.current = setInterval(() => {
+      socket.emit("ping");
+    }, 15000);
 
-	useEffect(() => {
-		if (!quizInProgress) setHomeRedirect(true);
+    socket.on("next_question", (response) => {
+      if (response.status === "Success") {
+        quesNumberRef.current++;
+        setQuestion(response.question);
+      } else if (response.status === "Questions_Finished") {
+        setQuestion(null);
+        endQuiz();
+      } else {
+        console.log("ERROR");
+      }
+    });
 
-		if (!isPlayer) {
-			getNextQuestion();
-		}
+    socket.on("opponent_left", () => {
+      setOpponentLeft();
+      endQuiz();
+    });
 
-		pingIntervalRef.current = setInterval(() => {
-			socket.emit("ping");
-		}, 15000);
+    return () => {
+      socket.off("opponent_left");
+      socket.off("next_question");
+      clearTimeout(fetchMoreQuestionsTimeout.current);
+      clearInterval(pingIntervalRef.current);
+    };
+  }, []);
 
-		socket.on("next_question", response => {
-			if (response.status === "Success") {
-				quesNumberRef.current++;
-				setQuestion(response.question);
-				setChoices(response.choices);
-				setLoading(false);
-			} else if (response.status === "Questions_Finished") {
-				setQuestion(null);
-				endQuiz();
-			} else {
-				console.log("ERROR");
-			}
-		});
+  const handleNextQuestion = () => {
+    fetchMoreQuestionsTimeout.current = setTimeout(getNextQuestion, duration);
+    setShowQuestion(true);
+    socket.emit("question__show", true);
+  };
 
-		socket.on("opponent_left", () => {
-			setOpponentLeft();
-			endQuiz();
-		});
+  useEffect(() => {
+    if (question && !isPlayer) {
+    }
 
-		return () => {
-			socket.off("opponent_left");
-			socket.off("next_question");
-			clearTimeout(fetchMoreQuestionsTimeout.current);
-			clearInterval(pingIntervalRef.current);
-		};
-	}, []);
+    socket.on("question__show1", (showQuestion) => {
+      setShowQuestion(true);
+    });
 
-	useEffect(() => {
-		if (question) {
-			// setShowQuestion11(true);
-			if (!isPlayer) {
-				if (window.confirm(question)) {
-					fetchMoreQuestionsTimeout.current = setTimeout(getNextQuestion, duration);
-					props.setIsQuestionDisplay(true);
-					setShowQuestion(true);
-					const kk = true;
-					socket.emit("question__show", kk);
+    // socket.on("answers__show", (answerConfig) => {
+    //   setAnswer((prevArray) => [...prevArray, answerConfig]);
+    //   console.log(answer);
+    // });
 
-					console.log("админ отправил", showQuestion);
-				}
-			}
-		}
+    return () => {
+      clearTimeout(fetchMoreQuestionsTimeout.current);
+      setShowQuestion(false);
+    };
+  }, [question, isHost, duration, isPlayer]);
 
-		socket.on("question__show1", showQuestion => {
-			setShowQuestion(showQuestion);
-			setShowQuestion(true);
-			props.setIsQuestionDisplay(true);
-			console.log("клиент получил обратный сокет", showQuestion);
+  const animateTimer = () => {
+    if (timerRef.current) {
+      timerRef.current.classList.remove(styles.animateTimer);
+      void timerRef.current.offsetWidth;
+      timerRef.current.classList.add(styles.animateTimer);
+      const animationDelay = 500;
+      timerRef.current.style.animationDuration = duration - animationDelay + "ms";
+    }
+  };
 
-			if (!isPlayer) {
-				console.log("админ получил", showQuestion);
-			}
+  const getNextQuestion = () => {
+    socket.emit("get_next_question");
+  };
 
-			if (isPlayer) {
-				console.log("игрок получил", showQuestion);
-			}
-		});
+  return (
+    <div className={styles.quiz}>
+      <div className={styles.timer}>
+        <div ref={timerRef} className={styles.timerInner} />
+      </div>
 
-		return () => {
-			clearTimeout(fetchMoreQuestionsTimeout.current);
-			setShowQuestion(false);
-			props.setIsQuestionHide(false);
-		};
-	}, [question, isHost, duration, isPlayer]);
+      {isModerator && <Tables isModerator={isModerator} />}
 
-	const animateTimer = () => {
-		if (timerRef.current) {
-			timerRef.current.classList.remove(styles.animateTimer);
-			//Force Reflow
-			void timerRef.current.offsetWidth;
-			timerRef.current.classList.add(styles.animateTimer);
-			const animationDelay = 500;
-			timerRef.current.style.animationDuration = duration - animationDelay + "ms";
-		}
-	};
-
-	const getNextQuestion = () => {
-		socket.emit("get_next_question");
-	};
-
-	return (
-		<div className={styles.quiz}>
-			<div className={styles.timer}>
-				<div ref={timerRef} className={styles.timerInner} />
-			</div>
-			{isQuestionDisplay || showQuestion ? (
-				<TransitionGroup>
-					<CSSTransition
-						timeout={{ enter: 500, exit: 250 }}
-						key={quesNumberRef.current}
-						appear
-						classNames={{
-							appear,
-							appearActive,
-							enter,
-							enterActive,
-							exit,
-							exitActive,
-						}}
-						onEntered={animateTimer}
-					>
-						<Question
-							question={question}
-							questionNumber={quesNumberRef.current}
-							duration={duration}
-							isHost={isHost}
-							isPlayer={isPlayer}
-						/>
-					</CSSTransition>
-				</TransitionGroup>
-			) : (
-				""
-			)}
-		</div>
-	);
+      {!isModerator &&
+        (showQuestion ? (
+          <TransitionGroup>
+            <CSSTransition
+              timeout={{ enter: 500, exit: 250 }}
+              key={quesNumberRef.current}
+              appear
+              classNames={{
+                appear,
+                appearActive,
+                enter,
+                enterActive,
+                exit,
+                exitActive,
+              }}
+              onEntered={animateTimer}
+            >
+              <Question
+                question={question}
+                questionNumber={quesNumberRef.current}
+                duration={duration}
+                isModerator={isModerator}
+                isHost={isHost}
+                isPlayer={isPlayer}
+                playerName={playerName}
+              />
+            </CSSTransition>
+          </TransitionGroup>
+        ) : (
+          !isPlayer && (
+            <div>
+              <h3>{question}</h3>
+              <button onClick={handleNextQuestion}>GO</button>
+            </div>
+          )
+        ))}
+    </div>
+  );
 };
 
-const mapStateToProps = state => {
-	return {
-		quizInProgress: state.quizInProgress,
-		isHost: state.isHost,
-		isPlayer: state.isPlayer,
-		duration: state.duration,
-		isQuestionDisplay: state.isQuestionDisplay,
-	};
+const mapStateToProps = (state) => {
+  return {
+    quizInProgress: state.quizInProgress,
+    isHost: state.isHost,
+    isPlayer: state.isPlayer,
+    playerName: state.playerName,
+    isModerator: state.isModerator,
+    duration: state.duration,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-	return {
-		setOpponentLeft: () => dispatch(actions.setOpponentLeft()),
-		endQuiz: () => dispatch(actions.endQuiz()),
-		setIsQuestionDisplay: () => dispatch(actions.setIsQuestionDisplay(true)),
-		setIsQuestionHide: () => dispatch(actions.setIsQuestionDisplay(false)),
-	};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setOpponentLeft: () => dispatch(actions.setOpponentLeft()),
+    endQuiz: () => dispatch(actions.endQuiz()),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Quiz);

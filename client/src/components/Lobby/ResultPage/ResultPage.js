@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+
 import FormModal from "../../UI/FormModal/FormModal";
+
 import { socket } from "../../../index";
 import * as actions from "../../../store/actions/actions";
 import styles from "../../UI/FormModal/FormModal.module.css";
 
-const JoinRoom = (props) => {
+const ResultPage = (props) => {
   const [roomID, setRoomID] = useState(1);
-  const [playerName, setPlayerName] = useState("");
+  const [isModerator, setisModerator] = useState("");
   const [gameCount, setGameCount] = useState([]);
   const [error, setError] = useState(null);
+  const [playerName, setPlayerName] = useState("moderator");
 
   const topCard = useRef(null);
 
@@ -31,25 +34,14 @@ const JoinRoom = (props) => {
     };
   }, []);
 
-  //   const changeRoomID = (event) => {
-  //     const room = event.target.value;
-  //     setRoomID(room);
-  //     setError(null);
-  //   };
-
-  const changePlayerName = (event) => {
-    const player = event.target.value;
-    setPlayerName(player);
-  };
-
-  const submitJoinRoomHandler = (event) => {
+  const submitResultPageHandler = (event) => {
     event.preventDefault();
 
     socket.emit("join_room", roomID, playerName, (response) => {
       if (response.status === "Success") {
         props.setIsHost();
         props.setIsPlayer();
-        props.setPlayerName(playerName);
+        props.setIsModerator();
         setError(null);
         unstackCard();
       } else {
@@ -85,10 +77,8 @@ const JoinRoom = (props) => {
             ))}
           </select>
 
-          <input type="text" onChange={changePlayerName} placeholder="Введите название команды" />
-
-          <button type="button" onClick={submitJoinRoomHandler}>
-            Присоединиться
+          <button type="button" onClick={submitResultPageHandler}>
+            Просмотр игры
           </button>
         </div>
       </div>
@@ -105,7 +95,8 @@ const mapDispatchToProps = (dispatch) => {
     setIsHost: () => dispatch(actions.setIsHost(false)),
     setIsPlayer: () => dispatch(actions.setIsPlayer(true)),
     setPlayerName: (playerName) => dispatch(actions.setPlayerName(playerName)),
+    setIsModerator: () => dispatch(actions.setIsModerator(true)),
   };
 };
 
-export default withRouter(connect(null, mapDispatchToProps)(JoinRoom));
+export default withRouter(connect(null, mapDispatchToProps)(ResultPage));
