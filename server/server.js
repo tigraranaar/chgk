@@ -8,7 +8,8 @@ const myQuestions = require("./api/questions.json");
 const PORT = process.env.PORT || 4001;
 const io = socketIo(server);
 const quizManager = new QuizManager();
-var mod = require("nested-property");
+
+// const createJsonFile = require("./results/createJsonFile.js");
 
 let playersData = [];
 let resultData = myQuestions;
@@ -83,30 +84,7 @@ io.on("connection", (socket) => {
 
     const currQuestion = resultData[a][b];
     const currQAnswer = currQuestion['answers'];
-
-    // console.log(currQuestion);
-    // console.log(resultData[a][b]['answers'].find(x => x['playerName'] == playerName));
-    // currQAnswer.find(x => x['playerName'] == playerName)['playerAnswer'] = answer;
-
-
-
-    const v = mod.get(resultData, `${a}.${b}.answers`);
-    const z = v.find(product => product.items.some(item => item['playerName'] === playerName));
-    mod.set(z, `playerAnswer`, answer);
-
-
-
-
-    console.log(v);
-    console.log(z);
-    console.log(resultData);
-
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-
-
-
+    currQAnswer.find(x => x['playerName'] == playerName)['playerAnswer'] = answer;
 
     io.emit("answers__show", resultData[a]);
 
