@@ -25,14 +25,14 @@ class Quiz {
     }
 
     const currentQues = this.questions[this.currentQuesIdx++];
-    // const choices = "";
     const question = decodeHtml(currentQues.question);
     this.resetPlayersTime();
-    return { status: "Success", question }; // choices
+    return { status: "Success", question };
   }
 
   resetPlayersTime() {
     const currrentTime = new Date().getTime();
+    
     for (const player in this.players) {
       this.players[player].time = currrentTime;
     }

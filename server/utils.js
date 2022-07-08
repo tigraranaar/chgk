@@ -17,7 +17,6 @@ const shuffleChoices = choices => {
 		choices[randomIdx] = temp;
 	}
 
-	// decodeHtml
 	const decodedChoices = choices.map(choice => decodeHtml(choice));
 	return decodedChoices;
 };
