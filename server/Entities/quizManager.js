@@ -1,5 +1,5 @@
-const Player = require("./player");
-const Quiz = require("./quiz");
+const Player = require("./Player");
+const Quiz = require("./Quiz");
 
 class QuizManager {
   constructor() {
