@@ -20,7 +20,10 @@ class Quiz {
   }
 
   getQuestion() {
-    if (this.currentQuesIdx === myQuestions.length) {
+    console.log(this.currentQuesIdx);
+    console.log(myQuestions[this.room].length);
+
+    if (this.currentQuesIdx === myQuestions[this.room].length) {
       return { status: "Questions_Finished" };
     }
 

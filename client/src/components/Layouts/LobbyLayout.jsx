@@ -1,7 +1,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 
-export function LobbyLayout( {children} ) {
+export function LobbyLayout({ children }) {
   return (
     <Box
       sx={{
@@ -10,7 +10,7 @@ export function LobbyLayout( {children} ) {
         alignItems: 'center',
         height: '100vh',
         width: '100vw',
-        background: '##f6f6f6',
+        background: '#f6f6f6',
       }}
     >
       <Box

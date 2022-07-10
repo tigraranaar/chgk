@@ -3,15 +3,16 @@ const path = require("path");
 const app = express();
 const server = require("http").createServer(app);
 const socketIo = require("socket.io");
-const QuizManager = require("./Entities/quizManager");
+const QuizManager = require("./entities/quizManager");
 const myQuestions = require("./api/questions.json");
-const PORT = process.env.PORT || 4001;
+const { writeJsonFile } = require("./utils");
+const { createResults } = require("./db/createResults");
+const port = process.env.PORT || 4000;
 const io = socketIo(server);
 const quizManager = new QuizManager();
-var mod = require("nested-property");
 
 let playersData = [];
-let resultData = myQuestions;
+const resultData = JSON.parse(JSON.stringify(myQuestions))
 
 const questionData = Object.keys(myQuestions);
 
@@ -76,50 +77,34 @@ io.on("connection", (socket) => {
     }
 	});
 
+  socket.on("join_like_moderator", (roomID, callback) => {
+		const room = io.sockets.adapter.rooms.has(roomID);
+
+    if (room) {
+      socket.join(roomID);
+      callback({ status: "Success", roomID: roomID });
+    }
+    else {
+      callback({ status: "Failed", message: 'Room Doesn`t Exist' });  
+    }
+	});
+
   socket.on("submit_answer1", (answerConfig) => {
-    const { gameNumber, questionNumber, playerName, answer } = answerConfig;
-    const a = gameNumber.toString();
-    const b = questionNumber - 1;
+    // const { gameNumber, questionNumber, playerName, answer } = answerConfig;
+    // const a = gameNumber.toString();
+    // const b = questionNumber - 1;
 
-    const currQuestion = resultData[a][b];
-    const currQAnswer = currQuestion['answers'];
-
-    // console.log(currQuestion);
-    // console.log(resultData[a][b]['answers'].find(x => x['playerName'] == playerName));
+    // const currQuestion = resultData[a][b];
+    // const currQAnswer = currQuestion['answers'];
     // currQAnswer.find(x => x['playerName'] == playerName)['playerAnswer'] = answer;
 
+    // socket.to(roomID).emit("player_joined", playerName);
 
+    // io.emit("answers__show", resultData[a]);
 
-    const v = mod.get(resultData, `${a}.${b}.answers`);
-    const z = v.find(product => product.items.some(item => item['playerName'] === playerName));
-    mod.set(z, `playerAnswer`, answer);
+    // writeJsonFile(resultData[a], 'results');
 
-
-
-
-    console.log(v);
-    console.log(z);
-    console.log(resultData);
-
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-    // console.log(mod.get(resultData, `${a}.${b}.answers.${find(x => x['playerName'] == playerName)}.playerAnswer`));
-
-
-
-
-    io.emit("answers__show", resultData[a]);
-
-    let json = JSON.stringify(resultData[a]);
-    let fs = require("fs");
-
-    fs.writeFile("results.json", json, "utf8", function (err) {
-      if (err) {
-        console.log("An error occured while writing JSON Object to File.");
-        return console.log(err);
-      }
-    });
-
+    createResults(answerConfig);
   });
 
   socket.on("get_next_question", async () => {
@@ -181,10 +166,10 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, "/../client/build")));
+app.use(express.static(path.join(`${__dirname}/../client/build`)));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/../client/build/index.html"));
+  res.sendFile(path.join(`${__dirname}/../client/build/index.html`));
 });
 
-server.listen(PORT, () => console.log(`Socket IO PORT #${PORT}`));
+server.listen(port, () => console.log(`Application listening on port ${port}!`));

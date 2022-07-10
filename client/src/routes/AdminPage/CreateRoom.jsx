@@ -23,6 +23,7 @@ export const CreateRoom = () => {
   const [startGame, setStartGame] = useState(false);
 
   useEffect(() => {
+    console.log('1');
       socket.emit("getGamesData");
 
       socket.on("sendGamesData", (data) => {
@@ -31,10 +32,12 @@ export const CreateRoom = () => {
   }, []);
 
   useEffect(() => {
+    console.log('2');
     gamesCount.length? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
   }, [gamesCount])
 
   useEffect(() => {
+    console.log('3');
     socket.on("player_joined", (teamName) => {
       dispatch(setPlayersList(teamName))
       showForm(setStartGame);

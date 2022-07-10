@@ -38,6 +38,7 @@ export function AppLayout( {children} ) {
 			transition={pageTransition}
 		>
 			{children}
+			
 			<Outlet />
 		</motion.div>
 	);

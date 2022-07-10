@@ -6,6 +6,7 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { io } from "socket.io-client";
+import { useSelector } from 'react-redux';
 import {
   BrowserRouter,
   Navigate,
@@ -17,17 +18,15 @@ import { JoinRoom } from './routes/PlayerPage/JoinRoom';
 import { CreateRoom } from './routes/AdminPage/CreateRoom';
 import { ModerRoom } from './routes/ModerPage/ModerRoom';
 import { Quiz } from './routes/Quiz/Quiz';
-import { useSelector } from 'react-redux';
 import { ModeratorTables } from './routes/Results/ModeratorTables';
 import { AppLayout } from './components/Layouts/AppLayout';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-
 const AuthGuard = ({ children } ) =>  {
-  const user = useSelector(state => state.lobby.clientType);
   const location = useLocation();
+  const user = useSelector(state => state.lobby.clientType);
 
   if (!user) {
       return <Navigate to="/" state={{ from: location }} />;
@@ -39,13 +38,11 @@ const AuthGuard = ({ children } ) =>  {
 const socketURL =
 	process.env.NODE_ENV === "production"
 		? "https://tigraranaar-chgk.herokuapp.com"
-		: "http://localhost:4001";
-
+		: "http://localhost:4000";
     
 export const socket = io(socketURL, {
 	transports: ["websocket","polling"],
 });
-
 
 root.render(
   // <React.StrictMode>

@@ -7,7 +7,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Box, CircularProgress } from "@mui/material";
 import { Container } from "@mui/system";
-import { LinearWithValueLabel } from "./ProgressBar"
+import { LinearWithValueLabel } from "./ProgressBar";
+const { log } = console;
 
 export const Quiz = () => {
   const [question, setQuestion] = useState(null);
@@ -20,15 +21,15 @@ export const Quiz = () => {
   const isModerator = useSelector(state => state.lobby.clientType) === 'moderator';
   const isPlayer = useSelector(state => state.lobby.clientType) === 'player';
   const duration = useSelector(state => state.quiz.duration);
+  const [quizEnd, setQuizEnd] = useState(false);
 
   useEffect(() => {
+    console.log('effect 1');
     if (isAdmin) {
       getNextQuestion();
-      console.log('1')
     }
 
     pingIntervalRef.current = setInterval(() => {
-      console.log('2')
       socket.emit("ping");
     }, 15000);
 
@@ -36,9 +37,11 @@ export const Quiz = () => {
       if (response.status === "Success") {
         quesNumberRef.current++;
         setQuestion(response.question);
-        console.log('3')
       } else if (response.status === "Questions_Finished") {
         setQuestion(null);
+
+        setQuizEnd(true);
+
         // endQuiz();
       } else {
         console.log("ERROR");
@@ -50,32 +53,31 @@ export const Quiz = () => {
       socket.off("next_question");
       clearTimeout(fetchMoreQuestionsTimeout.current);
       clearInterval(pingIntervalRef.current);
-      console.log('4')
     };
-  }, []);
+  }, [isAdmin]);
 
   const handleNextQuestion = () => {
-    console.log('5')
     fetchMoreQuestionsTimeout.current = setTimeout(getNextQuestion, duration);
     setShowQuestion(true);
     socket.emit("question__show", true);
   };
 
   useEffect(() => {
+    console.log('effect 2');
     socket.on("question__show1", (showQuestion) => {
-      console.log('6')
       setShowQuestion(true);
     });
 
+    // if (isAdmin && question)
+    // fetchMoreQuestionsTimeout.current = setTimeout(getNextQuestion, duration);
+
     return () => {
       clearTimeout(fetchMoreQuestionsTimeout.current);
-      console.log('7')
       setShowQuestion(false);
     };
-  }, [question, duration, isPlayer, isAdmin]);
+  }, [question, duration, isAdmin]);
 
   const getNextQuestion = () => {
-    console.log('8')
     socket.emit("get_next_question");
   };
 
@@ -98,7 +100,7 @@ export const Quiz = () => {
         }}
       >
 
-        {!isModerator && (
+        {!quizEnd && !isModerator && (
           <>
             {showQuestion ? (
             <>
@@ -166,6 +168,34 @@ export const Quiz = () => {
           )}
           </>
         )}
+
+        {quizEnd && (
+          <Box 
+            sx={{
+              height: '100%', 
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center'  
+            }}>
+
+          <Typography 
+            variant="h1" 
+            component="h1" 
+            sx={{
+              fontSize: 38,
+              marginBottom: 10,
+              textAlign: 'center'
+            }}
+          >
+            Игра окончена <br/>
+            Ожидайте результатов
+          </Typography>
+
+          <CircularProgress />
+        </Box>
+        )}
+
       </Box>
     </Container>
   );

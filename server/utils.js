@@ -4,24 +4,19 @@ const decodeHtml = htmlString => {
 	return unescape(htmlString);
 };
 
-const shuffleChoices = choices => {
-	let currentIdx = choices.length,
-		temp,
-		randomIdx;
+const writeJsonFile = (data, fileName) => {
+	const json = JSON.stringify(data);
+	const fs = require("fs");
 
-	while (0 !== currentIdx) {
-		randomIdx = Math.floor(Math.random() * currentIdx);
-		currentIdx--;
-		temp = choices[currentIdx];
-		choices[currentIdx] = choices[randomIdx];
-		choices[randomIdx] = temp;
-	}
-
-	const decodedChoices = choices.map(choice => decodeHtml(choice));
-	return decodedChoices;
-};
+	fs.writeFile(`${fileName}.json`, json, "utf8", function (err) {
+		if (err) {
+			console.log("An error occured while writing JSON Object to File.");
+			return console.log(err);
+		}
+	});
+}
 
 module.exports = {
 	decodeHtml,
-	shuffleChoices,
+	writeJsonFile
 };

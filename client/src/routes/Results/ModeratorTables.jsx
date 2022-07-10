@@ -6,11 +6,12 @@ import { useSelector } from "react-redux";
 export const ModeratorTables = () => {
   const [answersData, setAnswersData] = useState({});
   const currentGameNumber = useSelector(state => state.lobby.gameNumber);
+  const clientType = useSelector(state => state.lobby.clientType);
   console.log(Object.keys(answersData).length === 0);
 
   useEffect(() => {
     socket.on("answers__show", (answers) => {
-      if (answers) {
+      if (clientType === 'moderator' && answers) {
         setAnswersData(answers);
 
         console.log(answers);

@@ -60,7 +60,7 @@ export const ModerRoom = () => {
       dispatch(setClientType('moderator'));
       dispatch(createGame(currentGameNumber));
 
-      socket.emit("join_room", currentGameNumber, 'moderator', (response) => {
+      socket.emit("join_like_moderator", currentGameNumber, 'moderator', (response) => {
         if (response.status === "Success") {
           setErrorMessage(null);
           setWaitToStart(true);

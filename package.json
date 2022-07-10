@@ -1,0 +1,23 @@
+{
+  "name": "chgk-fullstack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/index",
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "install-app": "concurrently \"npm install && npm start\" \"cd client && npm install && npm start\"",
+    "app": "concurrently \"npm start\" \"cd client && npm start\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.2.2",
+    "express": "^4.18.1",
+    "he": "^1.2.0",
+    "lowdb": "^3.0.0",
+    "socket.io": "^4.5.1"
+  }
+}
