@@ -21,7 +21,7 @@ export const StartGame = () => {
     return () => {
       socket.off("start_quiz_ack");
     };
-  }, []);
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     socket.on("opponent_left", (player) => {
@@ -29,7 +29,7 @@ export const StartGame = () => {
         dispatch(deletePlayersList(player.playerName));
       }
     });
-  }, []);
+  }, [dispatch]);
 
   const startGameHandle = () => {  
     socket.emit("start_quiz", currentGameNumber);

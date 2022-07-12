@@ -9,13 +9,13 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { LobbyLayout } from "../../components/Layouts/LobbyLayout";
-// import { startQuiz } from "../../features/quiz/quizSlice";
+import { startQuiz } from "../../features/quiz/quizSlice";
 import { Button, CircularProgress, FormHelperText } from "@mui/material";
 
 export const ModerRoom = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const [gamesCount, setGamesCount] = useState([]);
   const [currentGameNumber, setCurrentGameNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,19 +30,19 @@ export const ModerRoom = () => {
   }, []);
 
   useEffect(() => {
-    gamesCount.length? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
+    gamesCount.length ? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
   }, [gamesCount])
 
   useEffect(() => {
     socket.on("start_quiz_ack", ({ roomID, duration }) => {
-      // dispatch(startQuiz({roomID, duration}));
+      dispatch(startQuiz({ roomID, duration }));
       navigate('/moderator_tables');
     });
 
     return () => {
       socket.off("start_quiz_ack");
     };
-  }, [])
+  }, [navigate, dispatch])
 
   const handleSelect = (event) => {
     setErrorMessage(null);
@@ -51,16 +51,16 @@ export const ModerRoom = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     if (!currentGameNumber) {
       setErrorMessage("Выберите номер игры");
     } else {
       setErrorMessage(null);
-      
+
       dispatch(setClientType('moderator'));
       dispatch(createGame(currentGameNumber));
 
-      socket.emit("join_like_moderator", currentGameNumber, 'moderator', (response) => {
+      socket.emit("join_room", currentGameNumber, 'moderator', (response) => {
         if (response.status === "Success") {
           setErrorMessage(null);
           setWaitToStart(true);
@@ -75,22 +75,22 @@ export const ModerRoom = () => {
     <LobbyLayout>
       {!waitToStart && (
         <>
-          <Typography 
-          variant="h1" 
-          component="h1" 
-          sx={{
-            fontSize: 48,
-            marginBottom: 2
-          }}
-        >
-          Наблюдение за игрой
+          <Typography
+            variant="h1"
+            component="h1"
+            sx={{
+              fontSize: 48,
+              marginBottom: 2
+            }}
+          >
+            Наблюдение за игрой
           </Typography>
 
-          {!gamesCount.length? 
+          {!gamesCount.length ?
             (
               <CircularProgress />
             ) : (
-              <FormControl sx={{ m: 1, minWidth: 303 }}>        
+              <FormControl sx={{ m: 1, minWidth: 303 }}>
                 <InputLabel id="demo-simple-select-label">Номер игры</InputLabel>
 
                 <Select
@@ -105,10 +105,10 @@ export const ModerRoom = () => {
                   ))}
                 </Select>
 
-                <Button 
+                <Button
                   sx={{
                     marginTop: '30px'
-                  }} 
+                  }}
                   variant="contained"
                   disabled={!gamesCount.length}
                   onClick={handleSubmit}
@@ -119,7 +119,7 @@ export const ModerRoom = () => {
             )
           }
 
-          <FormHelperText 
+          <FormHelperText
             sx={{
               height: '20px',
               marginTop: '20px',
@@ -133,9 +133,9 @@ export const ModerRoom = () => {
 
       {waitToStart && (
         <>
-          <Typography 
-            variant="h1" 
-            component="h1" 
+          <Typography
+            variant="h1"
+            component="h1"
             sx={{
               fontSize: 48,
               marginBottom: 2

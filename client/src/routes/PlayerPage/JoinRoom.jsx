@@ -37,7 +37,7 @@ export const JoinRoom = () => {
     return () => {
       socket.off("start_quiz_ack");
     };
-  }, [])
+  }, [navigate, dispatch])
 
   const handleSelect = (event) => {
     setErrorMessage(null);

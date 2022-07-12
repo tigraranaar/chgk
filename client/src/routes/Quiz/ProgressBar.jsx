@@ -22,7 +22,7 @@ function LinearProgressWithLabel(props) {
       <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
           reverseTimer,
-        )} с.`}</Typography>
+        )} сек.`}</Typography>
       </Box>
     </Box>
   );

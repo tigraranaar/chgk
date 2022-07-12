@@ -37,7 +37,6 @@ export const CreateRoom = () => {
   }, [gamesCount])
 
   useEffect(() => {
-    console.log('3');
     socket.on("player_joined", (teamName) => {
       dispatch(setPlayersList(teamName))
       showForm(setStartGame);
@@ -46,7 +45,7 @@ export const CreateRoom = () => {
     return () => {
       socket.off("player_joined");
     };
-  }, []);
+  }, [dispatch]);
 
   const handleSelect = (event) => {
     setErrorMessage(null);

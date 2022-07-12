@@ -8,14 +8,13 @@ import Typography from '@mui/material/Typography';
 import { Box, CircularProgress } from "@mui/material";
 import { Container } from "@mui/system";
 import { LinearWithValueLabel } from "./ProgressBar";
-const { log } = console;
 
 export const Quiz = () => {
   const [question, setQuestion] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
   const fetchMoreQuestionsTimeout = useRef(null);
   const pingIntervalRef = useRef(null);
-  const timerRef = useRef(null);
+  // const timerRef = useRef(null);
   const quesNumberRef = useRef(0);
   const isAdmin = useSelector(state => state.lobby.clientType) === 'admin';
   const isModerator = useSelector(state => state.lobby.clientType) === 'moderator';

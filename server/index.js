@@ -3,16 +3,17 @@ const path = require("path");
 const app = express();
 const server = require("http").createServer(app);
 const socketIo = require("socket.io");
-const QuizManager = require("./entities/QuizManager");
+const QuizManager = require("./entities/QuizManager1");
 const myQuestions = require("./api/questions.json");
 const { writeJsonFile } = require("./utils");
-const { createResults } = require("./db/createResults");
+const { createResults } = require("./results/createResults");
 const port = process.env.PORT || 4000;
 const io = socketIo(server);
 const quizManager = new QuizManager();
 
 let playersData = [];
-const resultData = JSON.parse(JSON.stringify(myQuestions))
+let results = [];
+const resultData = require("./api/questions.json");
 
 const questionData = Object.keys(myQuestions);
 
@@ -21,7 +22,7 @@ io.on("connection", (socket) => {
     io.emit("sendGamesData", questionData);
   });
 
-  socket.on("create_room", (roomID, callback) => {   
+  socket.on("create_room", (roomID, callback) => {
     const room = io.sockets.adapter.rooms.has(roomID);
 
     try {
@@ -38,7 +39,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join_room", (roomID, playerName, callback) => {
-		const room = io.sockets.adapter.rooms.has(roomID);
+    const room = io.sockets.adapter.rooms.has(roomID);
 
     try {
       if (room) {
@@ -50,19 +51,21 @@ io.on("connection", (socket) => {
           if (playersData.some(e => e.playerName === playerName)) {
             callback({ status: "Failed", message: 'The name already exist' });
           } else {
-            const player = {playerName: playerName, playerID: socket.id};
+            const player = { playerName: playerName, playerID: socket.id };
             playersData.push(player);
 
             const answerData = {
               'playerName': playerName,
-              'playerAnswer': ''
+              'playerAnswer': '',
+              'playerScore': 0
             };
-            
+
             resultData[roomID].forEach(question => question['answers'].push(answerData));
+            results = JSON.parse(JSON.stringify(resultData));
           }
         } else {
           socket.join(roomID);
-          
+
           callback({ status: "Success", roomID: roomID });
         }
 
@@ -70,41 +73,38 @@ io.on("connection", (socket) => {
       }
 
       else {
-        callback({ status: "Failed", message: 'Room Doesn`t Exist' });  
+        callback({ status: "Failed", message: 'Room Doesn`t Exist' });
       }
     } catch (error) {
       callback({ status: "Failed", message: 'Room Doesn`t Exist' });
     }
-	});
+  });
 
   socket.on("join_like_moderator", (roomID, callback) => {
-		const room = io.sockets.adapter.rooms.has(roomID);
-
-    if (room) {
+    try {
       socket.join(roomID);
       callback({ status: "Success", roomID: roomID });
+    } catch (error) {
+      callback({ status: "Failed", message: 'Room Doesn`t Exist' });
     }
-    else {
-      callback({ status: "Failed", message: 'Room Doesn`t Exist' });  
-    }
-	});
+  });
 
   socket.on("submit_answer1", (answerConfig) => {
-    // const { gameNumber, questionNumber, playerName, answer } = answerConfig;
-    // const a = gameNumber.toString();
-    // const b = questionNumber - 1;
+    const { gameNumber, questionNumber, playerName, answer } = answerConfig;
+    const currQuestion = results[gameNumber][questionNumber - 1];
+    const currQAnswer = currQuestion['answers'];
 
-    // const currQuestion = resultData[a][b];
-    // const currQAnswer = currQuestion['answers'];
-    // currQAnswer.find(x => x['playerName'] == playerName)['playerAnswer'] = answer;
+    currQAnswer.forEach(element => {
+      if (element['playerName'] === playerName) {
+        element['playerAnswer'] = answer;
+      }
+    });
 
-    // socket.to(roomID).emit("player_joined", playerName);
+    results[gameNumber].forEach(element => {
+      console.log(element.answers);
+    });
 
-    // io.emit("answers__show", resultData[a]);
-
-    // writeJsonFile(resultData[a], 'results');
-
-    createResults(answerConfig);
+    io.emit("answers__show", results[gameNumber]);
   });
 
   socket.on("get_next_question", async () => {
@@ -151,7 +151,7 @@ io.on("connection", (socket) => {
   socket.on("disconnecting", () => {
     const sokID = socket.id.toString();
     const deletedPlayer = playersData.filter((item) => item.playerID === sokID);
-    
+
     playersData.forEach((item, index, arr) => {
       if (item.playerID === sokID) {
         arr.splice(index, 1);
