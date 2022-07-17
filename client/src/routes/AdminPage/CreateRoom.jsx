@@ -23,7 +23,7 @@ export const CreateRoom = () => {
   const [startGame, setStartGame] = useState(false);
 
   useEffect(() => {
-    console.log('1');
+    console.log('12');
     socket.emit("getGamesData");
 
     socket.on("sendGamesData", (data) => {
