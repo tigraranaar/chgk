@@ -24,16 +24,16 @@ export const CreateRoom = () => {
 
   useEffect(() => {
     console.log('1');
-      socket.emit("getGamesData");
+    socket.emit("getGamesData");
 
-      socket.on("sendGamesData", (data) => {
-        setGamesCount([...data]);
-      });
+    socket.on("sendGamesData", (data) => {
+      setGamesCount([...data]);
+    });
   }, []);
 
   useEffect(() => {
     console.log('2');
-    gamesCount.length? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
+    gamesCount.length ? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
   }, [gamesCount])
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export const CreateRoom = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     if (!currentGameNumber) {
       setErrorMessage("Выберите номер игры");
     } else {
@@ -85,51 +85,52 @@ export const CreateRoom = () => {
     <LobbyLayout>
       {createRoom && (
         <>
-          <Typography 
-          variant="h1" 
-          component="h1" 
-          sx={{
-            fontSize: 48,
-            marginBottom: 2
-          }}
-        >
-          Выберите игру
+          <Typography
+            variant="h1"
+            component="h1"
+            sx={{
+              fontSize: { xs: 22, md: 32 },
+              marginBottom: 2
+            }}
+
+          >
+            Выберите игру
           </Typography>
 
-          {!gamesCount.length? 
+          {!gamesCount.length ?
             (
               <CircularProgress />
             ) : (
-              <FormControl sx={{ m: 1, minWidth: 303 }}>        
-                    <InputLabel id="demo-simple-select-label">Номер игры</InputLabel>
+              <FormControl sx={{ m: 1, minWidth: 303 }}>
+                <InputLabel id="demo-simple-select-label">Номер игры</InputLabel>
 
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={currentGameNumber}
-                      label="Номер игры"
-                      onChange={handleSelect}
-                    >
-                      {gamesCount.map((el, i) => (
-                        <MenuItem value={el} key={i}>{el}</MenuItem>
-                      ))}
-                    </Select>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={currentGameNumber}
+                  label="Номер игры"
+                  onChange={handleSelect}
+                >
+                  {gamesCount.map((el, i) => (
+                    <MenuItem value={el} key={i}>{el}</MenuItem>
+                  ))}
+                </Select>
 
-                    <Button 
-                      sx={{
-                        marginTop: '30px'
-                      }} 
-                      variant="contained"
-                      disabled={!gamesCount.length}
-                      onClick={handleSubmit}
-                    >
-                      Создать игру
-                    </Button>
+                <Button
+                  sx={{
+                    marginTop: '30px'
+                  }}
+                  variant="contained"
+                  disabled={!gamesCount.length}
+                  onClick={handleSubmit}
+                >
+                  Создать игру
+                </Button>
               </FormControl>
             )
           }
 
-          <FormHelperText 
+          <FormHelperText
             sx={{
               height: '20px',
               marginTop: '20px',

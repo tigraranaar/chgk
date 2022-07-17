@@ -26,11 +26,11 @@ export const JoinRoom = () => {
     socket.on("sendGamesData", (data) => {
       setGamesCount([...data]);
     });
-}, []);
+  }, []);
 
   useEffect(() => {
     socket.on("start_quiz_ack", ({ roomID, duration }) => {
-      dispatch(startQuiz({roomID, duration}));
+      dispatch(startQuiz({ roomID, duration }));
       navigate('/quiz');
     });
 
@@ -45,7 +45,7 @@ export const JoinRoom = () => {
   };
 
   const isStringEmpty = (str) => str === null || str.match(/^ *$/) !== null;
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -55,7 +55,7 @@ export const JoinRoom = () => {
       setErrorMessage(null);
       dispatch(setClientType('player'));
       dispatch(createGame(currentGameNumber));
-      
+
 
       socket.emit("join_room", currentGameNumber, teamName, (response) => {
         if (response.status === "Success") {
@@ -73,19 +73,19 @@ export const JoinRoom = () => {
   return (
     <LobbyLayout>
       {!waitToStart && (
-        <>      
-          <Typography 
-            variant="h1" 
-            component="h1" 
+        <>
+          <Typography
+            variant="h1"
+            component="h1"
             sx={{
-              fontSize: 48,
+              fontSize: { xs: 22, md: 32 },
               marginBottom: 2
             }}
           >
             Войти в игру
           </Typography>
 
-          <FormControl sx={{ m: 1, minWidth: 303 }}>        
+          <FormControl sx={{ m: 1, minWidth: 303 }}>
             <InputLabel id="demo-simple-select-label">Номер игры</InputLabel>
 
             <Select
@@ -100,26 +100,26 @@ export const JoinRoom = () => {
               ))}
             </Select>
 
-            <TextField 
-              sx={{marginTop: '20px'}} 
-              id="standard-basic" 
-              label="Название команды" 
-              variant="standard" 
-              onChange={(e) => setTeamName(e.target.value)} 
+            <TextField
+              sx={{ marginTop: '20px' }}
+              id="standard-basic"
+              label="Название команды"
+              variant="standard"
+              onChange={(e) => setTeamName(e.target.value)}
             />
 
-            <Button 
+            <Button
               sx={{
                 marginTop: '30px',
-              }} 
+              }}
               variant="contained"
               disabled={!gamesCount.length}
               onClick={handleSubmit}
             >
               Войти в игру
             </Button>
-            
-            <FormHelperText 
+
+            <FormHelperText
               sx={{
                 height: '20px',
                 marginTop: '20px',
@@ -134,11 +134,11 @@ export const JoinRoom = () => {
 
       {waitToStart && (
         <>
-          <Typography 
-            variant="h1" 
-            component="h1" 
+          <Typography
+            variant="h1"
+            component="h1"
             sx={{
-              fontSize: 48,
+              fontSize: { xs: 22, md: 32 },
               marginBottom: 2
             }}
           >

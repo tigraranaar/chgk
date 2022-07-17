@@ -1,30 +1,30 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Tab, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { LobbyLayout } from './components/Layouts/LobbyLayout';
 
 function App() {
   return (
     <LobbyLayout>
-      <Typography variant="h1" component="h1" 
+      <Typography variant="h1" component="h1"
         sx={{
-          fontSize: 48,
+          fontSize: { xs: 22, md: 32 },
           marginBottom: 2
         }}
       >
         Войти как:
       </Typography>
 
-      <NavLink to="/create-room">
-        <Tab label="Администратор"/>
+      <NavLink to="/create-room" style={{ textDecoration: 'none', marginBottom: '12px' }}>
+        <Button variant="outlined">Администратор</Button>
       </NavLink>
 
-      <NavLink to="/join-room">
-        <Tab label="Игрок"/>
+      <NavLink to="/join-room" style={{ textDecoration: 'none', marginBottom: '12px' }}>
+        <Button variant="outlined">Игрок</Button>
       </NavLink>
 
-      <NavLink to="/moder-room">
-        <Tab label="Модератор"/>
+      <NavLink to="/moder-room" style={{ textDecoration: 'none', marginBottom: '12px' }}>
+        <Button variant="outlined">Модератор</Button>
       </NavLink>
     </LobbyLayout>
   );

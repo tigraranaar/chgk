@@ -8,11 +8,11 @@ export const ShareRoom = () => {
 
   return (
     <>
-      <Typography 
-        variant="h1" 
-        component="h1" 
+      <Typography
+        variant="h1"
+        component="h1"
         sx={{
-          fontSize: 48,
+          fontSize: { xs: 22, md: 32 },
           marginBottom: 2
         }}
       >
@@ -21,7 +21,7 @@ export const ShareRoom = () => {
 
       <Chip label={currentGameNumber} />
 
-      <CircularProgress sx={{marginTop: '40px'}} />
+      <CircularProgress sx={{ marginTop: '40px' }} />
     </>
   );
 };

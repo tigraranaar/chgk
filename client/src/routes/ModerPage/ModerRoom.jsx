@@ -79,7 +79,7 @@ export const ModerRoom = () => {
             variant="h1"
             component="h1"
             sx={{
-              fontSize: 48,
+              fontSize: { xs: 22, md: 32 },
               marginBottom: 2
             }}
           >
@@ -137,7 +137,7 @@ export const ModerRoom = () => {
             variant="h1"
             component="h1"
             sx={{
-              fontSize: 48,
+              fontSize: { xs: 22, md: 32 },
               marginBottom: 2
             }}
           >

@@ -10,6 +10,7 @@ const { createResults } = require("./results/createResults");
 const port = process.env.PORT || 4000;
 const io = socketIo(server);
 const quizManager = new QuizManager();
+fs = require('fs');
 
 let playersData = [];
 let results = [];
@@ -100,19 +101,19 @@ io.on("connection", (socket) => {
       }
     });
 
-    results[gameNumber].forEach(element => {
-      console.log(element.answers);
-    });
-
     io.emit("answers__show", results[gameNumber]);
   });
 
   socket.on("get_next_question", async () => {
     const quiz = quizManager.getQuiz(socket.quizRoom);
     if (quiz) {
-      const question = await quiz.getNextQuestion();
+      // const question = await quiz.getNextQuestion();
 
-      io.to(quiz.room).emit("next_question", question);
+      const obj = await quiz.getNextQuestion();
+      
+
+      // io.to(quiz.room).emit("next_question", question);
+      io.to(quiz.room).emit("next_question", obj);
     }
   });
 
@@ -146,6 +147,25 @@ io.on("connection", (socket) => {
         duration: quiz.duration,
       });
     }
+  });
+
+  socket.on("show_results_for_everybody", (image) => {
+    if (!image) return;
+
+    // console.log(image);
+
+    const data = image.replace(/^data:image\/\w+;base64,/, "");
+    const buf = Buffer.from(data, 'base64');
+
+    fs.writeFile('server/results/scores.png', buf, function (err) {
+      if (err) return console.log(err);
+    });
+
+    io.emit("show_results_for_everybody1", image);
+  });
+
+  socket.on("GameAndQuizEnd", (bool) => {
+    io.emit("GameAndQuizEnd1", bool);
   });
 
   socket.on("disconnecting", () => {

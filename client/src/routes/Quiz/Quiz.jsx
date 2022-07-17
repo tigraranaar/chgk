@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { socket } from "../../index";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Question } from './Question';
 
 import Button from '@mui/material/Button';
@@ -8,10 +8,18 @@ import Typography from '@mui/material/Typography';
 import { Box, CircularProgress } from "@mui/material";
 import { Container } from "@mui/system";
 import { LinearWithValueLabel } from "./ProgressBar";
+import { endQuiz } from "../../features/quiz/quizSlice";
+
+// import { useNavigate } from "react-router-dom";
 
 export const Quiz = () => {
+  const dispatch = useDispatch();
   const [question, setQuestion] = useState(null);
+  const [answer, setAnswer] = useState(null);
+  const [prevQuestion, setPrevQuestion] = useState(null);
+  const [prevAnswer, setPrevAnswer] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
+  const [showScores, setShowScores] = useState(false);
   const fetchMoreQuestionsTimeout = useRef(null);
   const pingIntervalRef = useRef(null);
   // const timerRef = useRef(null);
@@ -21,9 +29,23 @@ export const Quiz = () => {
   const isPlayer = useSelector(state => state.lobby.clientType) === 'player';
   const duration = useSelector(state => state.quiz.duration);
   const [quizEnd, setQuizEnd] = useState(false);
+  // const navigate = useNavigate();
+  const [scoreImage, setScoreImage] = useState(null);
 
   useEffect(() => {
-    console.log('effect 1');
+    socket.on("show_results_for_everybody1", (image) => {
+      setShowScores(true);
+
+
+      console.log(image);
+      setScoreImage(image);
+    });
+
+    console.log(prevQuestion);
+    console.log(prevAnswer);
+  })
+
+  useEffect(() => {
     if (isAdmin) {
       getNextQuestion();
     }
@@ -32,16 +54,34 @@ export const Quiz = () => {
       socket.emit("ping");
     }, 15000);
 
+    // socket.on("next_question", (response) => {
+    //   if (response.status === "Success") {
+    //     quesNumberRef.current++;
+    //     setPrevQuestion(question);
+    //     setQuestion(response.question);
+    //   } else if (response.status === "Questions_Finished") {
+    //     setQuestion(null);
+
+    //     setQuizEnd(true);
+
+    //     // endQuiz();
+    //   } else {
+    //     console.log("ERROR");
+    //   }
+    // });
+
     socket.on("next_question", (response) => {
       if (response.status === "Success") {
-        quesNumberRef.current++;
-        setQuestion(response.question);
+        quesNumberRef.current++;        
+        setQuestion(response.obj.question);
+        setAnswer(response.obj.answer);
       } else if (response.status === "Questions_Finished") {
         setQuestion(null);
 
         setQuizEnd(true);
+        dispatch(endQuiz(true));
 
-        // endQuiz();
+        socket.emit("GameAndQuizEnd", true);
       } else {
         console.log("ERROR");
       }
@@ -62,7 +102,6 @@ export const Quiz = () => {
   };
 
   useEffect(() => {
-    console.log('effect 2');
     socket.on("question__show1", (showQuestion) => {
       setShowQuestion(true);
     });
@@ -77,6 +116,9 @@ export const Quiz = () => {
   }, [question, duration, isAdmin]);
 
   const getNextQuestion = () => {
+    setPrevQuestion(question);
+    setPrevAnswer(answer);
+
     socket.emit("get_next_question");
   };
 
@@ -99,7 +141,7 @@ export const Quiz = () => {
         }}
       >
 
-        {!quizEnd && !isModerator && (
+        {!showScores && !quizEnd && !isModerator && (
           <>
             {showQuestion ? (
             <>
@@ -140,6 +182,37 @@ export const Quiz = () => {
 
               {isAdmin && (
                 <Box sx={{textAlign: 'center'}}>
+
+                  {prevQuestion && (
+                    <>
+                      <Typography 
+                        variant="h1" 
+                        component="h1" 
+                        sx={{
+                          fontSize: 38,
+                          marginBottom: 3,
+                          textAlign: 'center'
+                        }}
+                      >
+                        {prevQuestion}
+                      </Typography>
+
+                      <Typography 
+                        variant="h1" 
+                        component="h1" 
+                        sx={{
+                          fontSize: 38,
+                          marginBottom: 3,
+                          textAlign: 'center'
+                        }}
+                        >
+                        Ответ: 
+                        {prevAnswer}
+                      </Typography>
+                    </>
+                  )}
+
+
                   <Typography 
                     variant="h1" 
                     component="h1" 
@@ -149,6 +222,9 @@ export const Quiz = () => {
                       textAlign: 'center'
                     }}
                   >
+                    Следующий вопрос:
+                    <br/>
+                    <br/>
                     {question}
                   </Typography>
 
@@ -168,7 +244,7 @@ export const Quiz = () => {
           </>
         )}
 
-        {quizEnd && (
+        {!showScores && quizEnd && (
           <Box 
             sx={{
               height: '100%', 
@@ -193,6 +269,10 @@ export const Quiz = () => {
 
           <CircularProgress />
         </Box>
+        )}
+
+        {showScores && scoreImage &&(
+          <img src={scoreImage} alt="score table" style={{width: '100%'}}/>
         )}
 
       </Box>

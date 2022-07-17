@@ -10,19 +10,22 @@ export function LobbyLayout({ children }) {
         alignItems: 'center',
         height: '100vh',
         width: '100vw',
-        background: '#f6f6f6',
+        backgroundImage: 'url(https://miro.medium.com/max/900/1*4XYK7KcXkSTEVTbFydXk9w.jpeg)',
+        backgroundPosition: 'top right',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover'
       }}
     >
       <Box
         sx={{
-          width: '50vw',
+          width: { xs: '90vw', sm: '75vw', md: '50vw' },
           height: '50vh',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           background: '#ffffff',
-          borderRadius: '8px',
+          borderRadius: '12px',
           boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px'
         }}
       >

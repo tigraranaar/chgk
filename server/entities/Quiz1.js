@@ -26,8 +26,15 @@ class Quiz {
 
     const currentQues = this.questions[this.currentQuesIdx++];
     const question = decodeHtml(currentQues.question);
+    const answer = decodeHtml(currentQues.correct_answer);
+    
+    const obj = {
+      question: question,
+      answer: answer
+    }
+
     this.resetPlayersTime();
-    return { status: "Success", question };
+    return { status: "Success", obj };
   }
 
   resetPlayersTime() {

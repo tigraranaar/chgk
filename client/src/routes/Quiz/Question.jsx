@@ -24,13 +24,13 @@ export const Question = (props) => {
   };
 
   return (
-    <Grid container spacing={2} sx={{height: '100%'}}>
+    <Grid container spacing={2} sx={{ height: '100%' }}>
       <Grid item xs={12} md={6}>
-        <Typography 
-          variant="h1" 
-          component="h1" 
+        <Typography
+          variant="h1"
+          component="h1"
           sx={{
-            fontSize: 38,
+            fontSize: { xs: 22, md: 32 },
             marginBottom: 2
           }}
         >
@@ -38,10 +38,10 @@ export const Question = (props) => {
         </Typography>
 
         <Typography
-          variant="h2" 
-          component="h2" 
+          variant="h2"
+          component="h2"
           sx={{
-            fontSize: 28,
+            fontSize: { xs: 22, md: 32 },
             marginBottom: 2
           }}
         >
@@ -49,34 +49,34 @@ export const Question = (props) => {
         </Typography>
       </Grid>
       {isPlayer && (
-        <Grid item xs={12} md={6} sx={{textAlign: 'center'}}>
-            <TextareaAutosize
-              maxRows={4}
-              aria-label="maximum height"
-              placeholder="Введите Ваш ответ"
-              onChange={handleAnswer}
-              style={{ 
-                width: '100%', 
-                height: '75%', 
-                resize: 'none', 
-                outline: 'none',
-                borderRadius: '8px',
-                border: '1px solid #919191',
-                padding: '20px',
-                fontSize: '20px',
-                boxShadow: 'rgb(50 50 93 / 25%) 0px 6px 12px -2px, rgb(0 0 0 / 30%) 0px 3px 7px -3px',
-              }}
-            />
-            <Button
-              sx={{
-                marginTop: '20px',
-              }} 
-              variant="contained"
-              onClick={handleSend}
-              disabled={disabledButton}
-            >
-              Отправить ответ
-            </Button>
+        <Grid item xs={12} md={6} sx={{ textAlign: 'center' }}>
+          <TextareaAutosize
+            maxRows={4}
+            aria-label="maximum height"
+            placeholder="Введите Ваш ответ"
+            onChange={handleAnswer}
+            style={{
+              width: '100%',
+              height: '75%',
+              resize: 'none',
+              outline: 'none',
+              borderRadius: '8px',
+              border: '1px solid #919191',
+              padding: '20px',
+              fontSize: '20px',
+              boxShadow: 'rgb(50 50 93 / 25%) 0px 6px 12px -2px, rgb(0 0 0 / 30%) 0px 3px 7px -3px',
+            }}
+          />
+          <Button
+            sx={{
+              marginTop: '20px',
+            }}
+            variant="contained"
+            onClick={handleSend}
+            disabled={disabledButton}
+          >
+            Отправить ответ
+          </Button>
         </Grid>
       )}
     </Grid>

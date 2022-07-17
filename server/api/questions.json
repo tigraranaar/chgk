@@ -5,6 +5,7 @@
 			"qnum": "1",
 			"question": "Вопрос 1 из 1",
 			"correct_answer": "ответ 1",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -12,6 +13,7 @@
 			"qnum": "2",
 			"question": "Вопрос 2 из 1",
 			"correct_answer": "ответ 2",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -19,6 +21,7 @@
 			"qnum": "3",
 			"question": "Вопрос 3 из 1",
 			"correct_answer": "ответ 3",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -26,6 +29,7 @@
 			"qnum": "4",
 			"question": "Вопрос 4 из 1",
 			"correct_answer": "ответ 4",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -33,6 +37,7 @@
 			"qnum": "5",
 			"question": "Вопрос 5 из 1",
 			"correct_answer": "ответ 5",
+			"comment": "",
 			"answers": []
 		}
 	],
@@ -42,6 +47,7 @@
 			"qnum": "1",
 			"question": "Вопрос 1 из 2",
 			"correct_answer": "ответ 1",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -49,6 +55,7 @@
 			"qnum": "2",
 			"question": "Вопрос 2 из 2",
 			"correct_answer": "ответ 2",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -56,6 +63,7 @@
 			"qnum": "3",
 			"question": "Вопрос 3 из 2",
 			"correct_answer": "ответ 3",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -63,6 +71,7 @@
 			"qnum": "4",
 			"question": "Вопрос 4 из 2",
 			"correct_answer": "ответ 4",
+			"comment": "",
 			"answers": []
 		},
 		{
@@ -70,6 +79,7 @@
 			"qnum": "5",
 			"question": "Вопрос 5 из 2",
 			"correct_answer": "ответ 5",
+			"comment": "",
 			"answers": []
 		}
 	]

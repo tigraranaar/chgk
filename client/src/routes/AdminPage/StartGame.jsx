@@ -14,7 +14,7 @@ export const StartGame = () => {
 
   useEffect(() => {
     socket.on("start_quiz_ack", ({ roomID, duration }) => {
-      dispatch(startQuiz({roomID, duration}));
+      dispatch(startQuiz({ roomID, duration }));
       navigate('/quiz');
     });
 
@@ -31,40 +31,40 @@ export const StartGame = () => {
     });
   }, [dispatch]);
 
-  const startGameHandle = () => {  
+  const startGameHandle = () => {
     socket.emit("start_quiz", currentGameNumber);
   }
 
   return (
     <>
-      <Typography 
-        variant="h1" 
-        component="h1" 
+      <Typography
+        variant="h1"
+        component="h1"
         sx={{
-          fontSize: 48,
+          fontSize: { xs: 22, md: 32 },
           marginBottom: 2
         }}
       >
         Нажмите для старта
       </Typography>
 
-      <Button 
+      <Button
         sx={{
           marginTop: '30px',
-        }} 
+        }}
         variant="contained"
         onClick={startGameHandle}
       >
         Начать игру
       </Button>
 
-      <Typography 
-        variant="h1" 
-        component="h1" 
+      <Typography
+        variant="h1"
+        component="h1"
         sx={{
-          fontSize: 20,
-          marginTop: 10,
-          marginBottom: 2
+          fontSize: { xs: 22, md: 32 },
+          marginBottom: 2,
+          marginTop: 10
         }}
       >
         Подключенных команд: {playersList.length}

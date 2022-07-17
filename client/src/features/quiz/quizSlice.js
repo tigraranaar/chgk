@@ -10,7 +10,8 @@ const initialState = {
   quizInProgress: false,
   duration: 0,
   playerName: "player",
-  players: []
+  players: [],
+  quizEnd: false
 };
 
 export const quizSlice = createSlice({
@@ -41,9 +42,13 @@ export const quizSlice = createSlice({
         }
       });
     },
+
+    endQuiz: (state, action) => {
+      state.quizEnd = true;
+    },
   },
 });
 
-export const { startQuiz, setPlayerJoined, setPlayersList, deletePlayersList, setPlayerName } = quizSlice.actions;
+export const { startQuiz, setPlayerJoined, setPlayersList, deletePlayersList, setPlayerName, endQuiz } = quizSlice.actions;
 
 export default quizSlice.reducer;
