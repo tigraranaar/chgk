@@ -34,7 +34,9 @@ export const ModeratorTables = () => {
         setAnswersData(answers);
         dispatch(updateResults(answers))
 
-        if (playersScore.lentgh === 0) {
+        console.log(playersScore.length);
+
+        if (playersScore.length === 0) {
           setPlayersScore(answers[0]['answers']);
         }
       }
