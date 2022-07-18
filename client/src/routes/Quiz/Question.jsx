@@ -24,7 +24,7 @@ export const Question = (props) => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ height: '100%' }}>
+    <Grid container spacing={2} sx={{ height: 'calc(90vh - 65px)' }}>
       <Grid item xs={12} md={6}>
         <Typography
           variant="h1"

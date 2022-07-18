@@ -35,14 +35,8 @@ export const Quiz = () => {
   useEffect(() => {
     socket.on("show_results_for_everybody1", (image) => {
       setShowScores(true);
-
-
-      console.log(image);
       setScoreImage(image);
     });
-
-    console.log(prevQuestion);
-    console.log(prevAnswer);
   })
 
   useEffect(() => {
@@ -53,22 +47,6 @@ export const Quiz = () => {
     pingIntervalRef.current = setInterval(() => {
       socket.emit("ping");
     }, 15000);
-
-    // socket.on("next_question", (response) => {
-    //   if (response.status === "Success") {
-    //     quesNumberRef.current++;
-    //     setPrevQuestion(question);
-    //     setQuestion(response.question);
-    //   } else if (response.status === "Questions_Finished") {
-    //     setQuestion(null);
-
-    //     setQuizEnd(true);
-
-    //     // endQuiz();
-    //   } else {
-    //     console.log("ERROR");
-    //   }
-    // });
 
     socket.on("next_question", (response) => {
       if (response.status === "Success") {

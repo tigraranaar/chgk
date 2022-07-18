@@ -19,12 +19,16 @@ const resultData = require("./api/questions.json");
 const questionData = Object.keys(myQuestions);
 
 io.on("connection", (socket) => {
+  let duration1;
+
   socket.on("getGamesData", () => {
     io.emit("sendGamesData", questionData);
   });
 
-  socket.on("create_room", (roomID, callback) => {
+  socket.on("create_room", (roomID, dur, callback) => {
     const room = io.sockets.adapter.rooms.has(roomID);
+    
+    duration1 = dur;
 
     try {
       if (room) {
@@ -50,7 +54,7 @@ io.on("connection", (socket) => {
           socket.to(roomID).emit("player_joined", playerName);
 
           if (playersData.some(e => e.playerName === playerName)) {
-            callback({ status: "Failed", message: 'The name already exist' });
+            callback({ status: "Failed", message: 'Имя команды занято, введите другое' });
           } else {
             const player = { playerName: playerName, playerID: socket.id };
             playersData.push(player);
@@ -74,10 +78,10 @@ io.on("connection", (socket) => {
       }
 
       else {
-        callback({ status: "Failed", message: 'Room Doesn`t Exist' });
+        callback({ status: "Failed", message: 'Ошибка! Игра уже существует' });
       }
     } catch (error) {
-      callback({ status: "Failed", message: 'Room Doesn`t Exist' });
+      callback({ status: "Failed", message: 'Ошибка! Игра уже существует' });
     }
   });
 
@@ -86,7 +90,7 @@ io.on("connection", (socket) => {
       socket.join(roomID);
       callback({ status: "Success", roomID: roomID });
     } catch (error) {
-      callback({ status: "Failed", message: 'Room Doesn`t Exist' });
+      callback({ status: "Failed", message: 'Игра недоступна, попробуйте позже' });
     }
   });
 
@@ -144,15 +148,14 @@ io.on("connection", (socket) => {
 
       io.to(roomID).emit("start_quiz_ack", {
         roomID: quiz.room,
-        duration: quiz.duration,
+        // duration: quiz.duration,
+        duration: duration1,
       });
     }
   });
 
   socket.on("show_results_for_everybody", (image) => {
     if (!image) return;
-
-    // console.log(image);
 
     const data = image.replace(/^data:image\/\w+;base64,/, "");
     const buf = Buffer.from(data, 'base64');

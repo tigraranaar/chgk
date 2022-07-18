@@ -25,7 +25,7 @@ export const ModerRoom = () => {
     socket.emit("getGamesData");
 
     socket.on("sendGamesData", (data) => {
-      setGamesCount([...data]);
+      setGamesCount([...data]);  
     });
   }, []);
 

@@ -33,6 +33,10 @@ export const ModeratorTables = () => {
       if (clientType === 'moderator' && answers) {
         setAnswersData(answers);
         dispatch(updateResults(answers))
+
+        if (!playersScore.lentgh === 0) return;
+        
+        setPlayersScore(answers[0]['answers']);
       }
     });
 
@@ -43,37 +47,21 @@ export const ModeratorTables = () => {
   });
 
   const handleChecked = (e, i, j) => {
-    if (e.target.checked) {
-      if (playersScore.find(e => e['playerName'] === j.playerName)) {
+    for(let index = 0; index < playersScore.length; index++) {
+      if(playersScore[index]['playerName'] === j.playerName) {
+        
+        let newArray = []
+        playersScore.forEach( (item, index) => {
+          newArray[index] = {...item}
+        })
 
-        for(let index = 0; index < playersScore.length; index++) {
-          if(playersScore[index]['playerName'] === j.playerName) {
-            let newArr = [...playersScore];
-            newArr[index]['playerScore'] ++;
-
-            setPlayersScore(newArr);
-          }
-
-        }
-      } else {
-        const newPlayer = {
-          playerName: j.playerName,
-          playerScore: 1
-        }
-    
-        setPlayersScore(oldArray => [...oldArray, newPlayer]);
-      }
-    }
-
-    if (!e.target.checked) {
-      for(let index = 0; index < playersScore.length; index++) {
-        if(playersScore[index]['playerName'] === j.playerName) {
-          let newArr = [...playersScore];
-          newArr[index]['playerScore'] --;
-
-          setPlayersScore(newArr);
+        if (e.target.checked) {
+          newArray[index]['playerScore'] ++;
+        } else {
+          newArray[index]['playerScore'] --;
         }
 
+        setPlayersScore(newArray);
       }
     }
   }
@@ -188,21 +176,6 @@ export const ModeratorTables = () => {
                         </>
                       )
                     })}
-
-                    {/* {answersData[0]['answers'].map((j) => {
-                      return (
-                        <>
-                          <TableCell align="left">
-                            <TextField
-                              sx={{ width: '100%' }}
-                              id="standard-basic"
-                              label="итого очков"
-                              variant="standard"
-                            />
-                          </TableCell>
-                        </>
-                      )
-                    })} */}
                   </TableRow>
                 </TableBody>
               </Table>

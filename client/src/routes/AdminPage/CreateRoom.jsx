@@ -16,23 +16,26 @@ import { StartGame } from "./StartGame";
 export const CreateRoom = () => {
   const dispatch = useDispatch();
   const [gamesCount, setGamesCount] = useState([]);
+  const [duration, setDuration] = useState(80);
   const [currentGameNumber, setCurrentGameNumber] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [createRoom, setCreateRoom] = useState(true);
   const [shareRoom, setShareRoom] = useState(false);
   const [startGame, setStartGame] = useState(false);
 
+  const durationArray = [20, 40, 60, 80, 100, 120];
+
   useEffect(() => {
-    console.log('12');
     socket.emit("getGamesData");
 
     socket.on("sendGamesData", (data) => {
-      setGamesCount([...data]);
+      setTimeout(() => {
+        setGamesCount([...data]);  
+      }, 1000);
     });
   }, []);
 
   useEffect(() => {
-    console.log('2');
     gamesCount.length ? setErrorMessage(null) : setErrorMessage("Проверка свободных комнат");
   }, [gamesCount])
 
@@ -69,7 +72,7 @@ export const CreateRoom = () => {
       dispatch(setClientType('admin'));
       dispatch(createGame(currentGameNumber));
 
-      socket.emit("create_room", currentGameNumber, (response) => {
+      socket.emit("create_room", currentGameNumber, duration*1000, (response) => {
         if (response.status === "Success") {
           setErrorMessage(null);
 
@@ -101,6 +104,8 @@ export const CreateRoom = () => {
             (
               <CircularProgress />
             ) : (
+
+              <>
               <FormControl sx={{ m: 1, minWidth: 303 }}>
                 <InputLabel id="demo-simple-select-label">Номер игры</InputLabel>
 
@@ -112,6 +117,23 @@ export const CreateRoom = () => {
                   onChange={handleSelect}
                 >
                   {gamesCount.map((el, i) => (
+                    <MenuItem value={el} key={i}>{el}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl sx={{ m: 1, minWidth: 303 }}>
+                <InputLabel id="demo-simple-select-label-1">Длина раундов, сек</InputLabel>
+
+                <Select
+                  labelId="demo-simple-select-label-1"
+                  id="demo-simple-select-1"
+                  value={duration}
+                  label="Длина раундов, сек"
+                  onChange={(e) => setDuration(e.target.value)}
+                  sx={{mt: 2}}
+                >
+                  {durationArray.map((el, i) => (
                     <MenuItem value={el} key={i}>{el}</MenuItem>
                   ))}
                 </Select>
@@ -127,6 +149,7 @@ export const CreateRoom = () => {
                   Создать игру
                 </Button>
               </FormControl>
+              </>
             )
           }
 
